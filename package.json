@@ -1,0 +1,16 @@
+{
+  "name": "codewrapper",
+  "version": "0.1.0",
+  "description": "Minimal, modular coding agent wrapper around a local modelrelay OpenAI-compatible endpoint. Workspace-scoped file + terminal tools with safety guards.",
+  "type": "module",
+  "bin": {
+    "codewrapper": "./src/single-agent/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node src/single-agent/index.js"
+  },
+  "license": "MIT"
+}
