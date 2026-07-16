@@ -1,5 +1,0 @@
-1. Modelrelay
-2. LLM some LLM Tools (e.g. EXPLORE, WRITE), and general prompts - Use caveman wenyan-ultra + ponytail benefits
-3. Byzantine debate structure for AI thinking between multiple different models.
-4. Queen-swarm command status for simple tasks
-5. Connect Ideation + Vivification overall prompting
