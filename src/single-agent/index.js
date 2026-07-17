@@ -39,11 +39,11 @@ async function main() {
   };
 
   const tools = createToolRegistry({ workspaceGuard, config, confirm });
-  const llmClient = createLLMClient({ baseUrl: config.baseUrl, apiKey: config.apiKey });
+  const llmClient = createLLMClient({ baseUrl: config.baseUrl, apiKey: config.apiKey, fallbackModels: config.fallbackModels });
   const systemPrompt = buildSystemPrompt({ workspaceRoot: workspaceGuard.root });
   const agent = new Agent({ config, llmClient, tools, systemPrompt });
 
-  console.log(`codewrapper — workspace: ${workspaceGuard.root}`);
+  console.log(`ultron — workspace: ${workspaceGuard.root}`);
   console.log(`model: ${config.model}  endpoint: ${config.baseUrl}`);
   console.log(`type a message, or "exit" to quit\n`);
 

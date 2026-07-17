@@ -1,2 +1,6 @@
-./node_modules
-./win.txt
+node_modules/
+.ultron-settings.json
+*.zip
+*.env
+.DS_Store
+Thumbs.db

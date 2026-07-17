@@ -4,14 +4,15 @@ import path from "node:path";
 const DEFAULTS = {
   baseUrl: "http://127.0.0.1:7352/v1",
   apiKey: "no-key",
-  model: "auto-fastest",
+  model: "hy3",
+  fallbackModels: ["nemotron-3-ultra", "north-mini-code", "mimo-v2.5"],
   allowNetworkCommands: false,
 };
 
 /**
  * Loads configuration in increasing priority order:
  *   1. built-in defaults
- *   2. .codewrapper.json in the current directory
+ *   2. .ultron.json in the current directory
  *   3. environment variables (MODELRELAY_*)
  *   4. explicit overrides (e.g. CLI flags)
  *
@@ -21,15 +22,17 @@ const DEFAULTS = {
  */
 export function loadConfig(overrides = {}) {
   let fileConfig = {};
-  const configPath = path.resolve(process.cwd(), ".codewrapper.json");
+  const configPath = path.resolve(process.cwd(), ".ultron.json");
   if (existsSync(configPath)) {
     try {
       fileConfig = JSON.parse(readFileSync(configPath, "utf8"));
     } catch (err) {
-      throw new Error(`Failed to parse .codewrapper.json: ${err.message}`);
+      throw new Error(`Failed to parse .ultron.json: ${err.message}`);
     }
   }
 
+  // to be clear, you can absolutely run it without any of these.
+  // modelrelay is free.
   const envConfig = {
     baseUrl: process.env.MODELRELAY_BASE_URL,
     apiKey: process.env.MODELRELAY_API_KEY,
@@ -47,7 +50,7 @@ export function loadConfig(overrides = {}) {
     ...cleanOverrides,
   };
 
-  const workspaceRootInput = merged.workspaceRoot || ".";
+  const workspaceRootInput = merged.workspaceRoot || "/workspace";
   const workspaceRoot = path.resolve(process.cwd(), workspaceRootInput);
 
   if (!existsSync(workspaceRoot) || !statSync(workspaceRoot).isDirectory()) {

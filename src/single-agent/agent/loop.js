@@ -9,13 +9,14 @@ import { toOpenAITools } from "../tools/index.js";
  * no global state and no knowledge of any other agent.
  */
 export class Agent {
-  constructor({ config, llmClient, tools, systemPrompt }) {
+  constructor({ config, llmClient, tools, systemPrompt, beforeToolCall }) {
     this.config = config;
     this.llmClient = llmClient;
     this.tools = tools;
     this.toolsByName = new Map(tools.map((t) => [t.name, t]));
     this.openAITools = toOpenAITools(tools);
     this.messages = [{ role: "system", content: systemPrompt }];
+    this.beforeToolCall = beforeToolCall;
   }
 
   /**
@@ -60,10 +61,15 @@ export class Agent {
         if (!tool) {
           result = { error: true, message: `Unknown tool: ${call.function.name}` };
         } else {
-          try {
-            result = await tool.execute(args);
-          } catch (err) {
-            result = { error: true, message: `Tool threw: ${err.message}` };
+          const allowed = !this.beforeToolCall || (await this.beforeToolCall(call.function.name, args));
+          if (!allowed) {
+            result = { error: true, message: `Tool "${call.function.name}" is not permitted.` };
+          } else {
+            try {
+              result = await tool.execute(args);
+            } catch (err) {
+              result = { error: true, message: `Tool threw: ${err.message}` };
+            }
           }
         }
 
@@ -78,6 +84,6 @@ export class Agent {
     }
 
     onEvent?.({ type: "assistant", text: "" });
-    return "[stopped: reached max tool-call iterations for this turn]";
+    return "";
   }
 }
